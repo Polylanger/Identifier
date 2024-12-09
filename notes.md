@@ -2,7 +2,7 @@
  * @Author: deep-machine-03 deep-machine-03@gmail.com
  * @Date: 2024-12-09 23:14:04
  * @LastEditors: deep-machine-03 deep-machine-03@gmail.com
- * @LastEditTime: 2024-12-10 02:51:00
+ * @LastEditTime: 2024-12-10 03:03:15
  * @FilePath: /Identifier/notes.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -10,12 +10,16 @@
 # 系统部署指南
 
 系统一键式部署docker大致分为6个步骤，在开始之前，需要准备一个linux操作系统作为宿主机
-- 1. 用conda创建python环境，并在宿主机上配置web应用所需环境，直到成功运行最简单的登录、注册
-- 2. 用docker创建一个mysql容器 identifier-mysql，进入容器的命令行，通过创建database/user验证容器是否创建成功
-- 3. 创建一个 Docker 网络 identifier-net，以便容器之间能够相互通信。然后在网络中重新部署一个 identifier-mysql，并且设置端口映射 10088:3306。通过将宿主机中web应用的数据库地址设置为 localhost:10088 验证网络、MySQL容器是否配置成功
-- 4. 使用官方的 Python 基础镜像+工程代码构建一个新镜像 web-app，并且进入容器的命令行，在容器中重新配置一遍 web 应用所需的环境。最后启动应用，在宿主机中可以通过 localhost:5000 访问成功
-- 5. 把步骤4中的指令整理成 dockerfile，构建并且部署到 identifier-net 中，并且设置端口映射 10089:5000。此时mysql和web-app位于同一子网下，可以使用mysql容器名作为数据库主机名，即：web应用中的数据库地址配置为 identifier-mysql:3306。此时，在宿主机中可以通过 localhost:10089 访问web应用。
+- 1. 在宿主机上创建并激活 Python 环境，安装 Web 应用所需的依赖，确保能够成功运行最简单的登录和注册功能。
+- 2. 拉取官方 MySQL 镜像并创建容器 `identifier-mysql`，验证数据库容器是否创建成功，并通过命令行创建数据库和用户。
+- 3. 创建一个 Docker 网络 `identifier-net` 使容器能够相互通信。然后在该网络下重新部署 `identifier-mysql` 容器，并设置端口映射 `10088:3306`。通过配置宿主机 Web 应用的数据库地址为 `localhost:10088` 来验证网络和 MySQL 容器是否配置正确。
+- 4. 使用官方 Python 基础镜像及项目代码构建新镜像 `web-app`，并进入容器配置所需环境。最后启动应用，通过 `localhost:5000` 验证 Web 应用是否运行正常。
+- 5. 将步骤 4 中的操作写入 Dockerfile，以便通过构建并部署 Web 应用容器。配置国内镜像源，并优化 Docker 构建缓存机制，确保只有在 `requirements.txt` 文件变化时才重新安装依赖。将 `web-app` 容器和 `mysql` 容器置于同一子网 `identifier-net` 下，并使用容器名作为数据库主机名（即 `identifier-mysql:3306`）。此时，在宿主机中可以通过 localhost:10089 访问web应用。
 - 6. 整理所有容器创建指令，生成 docker-compose.yml，实现一键式构建系统，配置网络、存储，部署应用及依赖服务。
+
+## 使用说明
+
+git 仓库中包含四个带有标签（tag）的提交，分别对应步骤 3/4/5/6。按顺序切换到每个标签的代码，逐步复现实验，最终目标是成功实现一个基于 Flask 框架的 Web 应用，并使用 MySQL 作为数据库。可以利用 Docker Compose 实现一键式部署。
 
 ## 1 用 conda 创建 python 环境
 
