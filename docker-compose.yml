@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: identifier-mysql
+    networks:
+      identifier-net: # 应用中使用容器名称作为主机名访问数据库
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: flask_db
+      MYSQL_USER: flask_user
+      MYSQL_PASSWORD: password
+    ports:
+      - "10088:3306"
+    volumes:
+      - ./data:/var/lib/mysql
+    restart: always
+
+  flask-app:
+    build:
+      context: ./flask_project  # 指定 Dockerfile 所在目录
+      dockerfile: Dockerfile    # 指定 Dockerfile 的文件名
+    container_name: flask-app
+    networks:
+      identifier-net:
+    environment:
+      FLASK_APP: flask_project/app.py
+      FLASK_ENV: production
+      FLASK_RUN_HOST: 0.0.0.0
+    ports:
+      - "10089:5000"
+    depends_on:
+      - mysql
+    restart: always
+
+networks:
+  identifier-net:
+    name: identifier-net # 如果没有明确指定网络的名称，Docker Compose 会自动生成一个网络名，格式为 projectname_servicename
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
+          gateway: 172.22.0.1
