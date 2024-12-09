@@ -2,7 +2,7 @@
  * @Author: deep-machine-03 deep-machine-03@gmail.com
  * @Date: 2024-12-09 23:14:04
  * @LastEditors: deep-machine-03 deep-machine-03@gmail.com
- * @LastEditTime: 2024-12-10 01:19:39
+ * @LastEditTime: 2024-12-10 01:34:26
  * @FilePath: /Identifier/notes.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -62,11 +62,13 @@ FLUSH PRIVILEGES;
 
 ## 构建容器
 
-使用官方的 Python 基础镜像 + 工程代码构建一个新镜像
+使用官方的 Python 基础镜像 + 工程代码构建一个新镜像，此时不对环境做任何配置
 > docker build -t flask-app .
 
 将容器和数据库配置在同一个网络中，创建之后直接进入容器的 bash 
 > docker run -it --network identifier-net -p 10089:5000 flask-app bash
+
+以下在容器中执行，配置系统环境：
 
 配置镜像源
 ```shell
@@ -98,3 +100,8 @@ apt-get install -y python3-dev default-libmysqlclient-dev build-essential pkg-co
 启动应用
 > python app.py
 
+## 编写 dockerfile 
+
+见 flask_project/Dockerfile
+- 为 apt, pip 配置国内的镜像源
+- 利用 docker 的缓存机制，先复制 requirements.txt 文件到容器，这样只有在 requirements.txt 变化时才会重新安装依赖，避免每次修改代码都安装依赖包
