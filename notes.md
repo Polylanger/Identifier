@@ -2,18 +2,18 @@
  * @Author: deep-machine-03 deep-machine-03@gmail.com
  * @Date: 2024-12-09 23:14:04
  * @LastEditors: deep-machine-03 deep-machine-03@gmail.com
- * @LastEditTime: 2024-12-10 01:37:00
+ * @LastEditTime: 2024-12-10 02:10:35
  * @FilePath: /Identifier/notes.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 
-## 用 conda 创建 python 环境
+## 1 用 conda 创建 python 环境
 
 > conda create -n identifier python=3.10
 
 > conda activate identifier
 
-## 使用 docker 官方的 MySQL 镜像
+## 2 使用 docker 官方的 MySQL 镜像
 
 拉取镜像
 > docker pull mysql
@@ -33,7 +33,7 @@ GRANT ALL PRIVILEGES ON flask_db.* TO 'flask_user'@'%';
 FLUSH PRIVILEGES;
 ```
 
-## 配置数据库容器的网络和存储
+## 3 配置数据库容器的网络和存储
 
 创建一个 Docker 网络，以便容器之间能够相互通信
 > docker network create \
@@ -60,7 +60,7 @@ FLUSH PRIVILEGES;
 验证数据库IP
 > docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' identifier-mysql
 
-## 构建容器
+## 4 构建容器
 
 使用官方的 Python 基础镜像 + 工程代码构建一个新镜像，此时不对环境做任何配置
 > docker build -t flask-app .
@@ -100,7 +100,7 @@ apt-get install -y python3-dev default-libmysqlclient-dev build-essential pkg-co
 启动应用
 > python app.py
 
-## 编写 dockerfile 
+## 5 编写 dockerfile 
 
 见 flask_project/Dockerfile
 - 为 apt, pip 配置国内的镜像源
@@ -109,3 +109,13 @@ apt-get install -y python3-dev default-libmysqlclient-dev build-essential pkg-co
 构建+部署
 > docker build -t flask-app .
 > docker run -it --network identifier-net -p 10089:5000 flask-app
+
+## 6 编写 docker-compose.yml
+
+根据 3 中创建网络和mysql容器的步骤，以及 5 中创建 flask-app 的指令，编写 docker-compose.yml。结果见：./docker-compose.yml
+
+启动所有服务
+> docker compose up --build -d
+
+关闭所有服务
+> docker compose down
