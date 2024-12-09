@@ -2,7 +2,7 @@
  * @Author: deep-machine-03 deep-machine-03@gmail.com
  * @Date: 2024-12-09 23:14:04
  * @LastEditors: deep-machine-03 deep-machine-03@gmail.com
- * @LastEditTime: 2024-12-10 01:34:26
+ * @LastEditTime: 2024-12-10 01:37:00
  * @FilePath: /Identifier/notes.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -105,3 +105,7 @@ apt-get install -y python3-dev default-libmysqlclient-dev build-essential pkg-co
 见 flask_project/Dockerfile
 - 为 apt, pip 配置国内的镜像源
 - 利用 docker 的缓存机制，先复制 requirements.txt 文件到容器，这样只有在 requirements.txt 变化时才会重新安装依赖，避免每次修改代码都安装依赖包
+
+构建+部署
+> docker build -t flask-app .
+> docker run -it --network identifier-net -p 10089:5000 flask-app
