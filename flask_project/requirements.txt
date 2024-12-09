@@ -1,0 +1,7 @@
+Flask
+Flask-SQLAlchemy
+Werkzeug
+PyMySQL
+flask-mysqldb
+mysqlclient
+cryptography
