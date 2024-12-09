@@ -2,7 +2,7 @@
  * @Author: deep-machine-03 deep-machine-03@gmail.com
  * @Date: 2024-12-09 23:14:04
  * @LastEditors: deep-machine-03 deep-machine-03@gmail.com
- * @LastEditTime: 2024-12-09 23:46:15
+ * @LastEditTime: 2024-12-10 01:19:39
  * @FilePath: /Identifier/notes.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -33,7 +33,7 @@ GRANT ALL PRIVILEGES ON flask_db.* TO 'flask_user'@'%';
 FLUSH PRIVILEGES;
 ```
 
-## 配置数据库网络和存储
+## 配置数据库容器的网络和存储
 
 创建一个 Docker 网络，以便容器之间能够相互通信
 > docker network create \
@@ -59,4 +59,42 @@ FLUSH PRIVILEGES;
 
 验证数据库IP
 > docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' identifier-mysql
+
+## 构建容器
+
+使用官方的 Python 基础镜像 + 工程代码构建一个新镜像
+> docker build -t flask-app .
+
+将容器和数据库配置在同一个网络中，创建之后直接进入容器的 bash 
+> docker run -it --network identifier-net -p 10089:5000 flask-app bash
+
+配置镜像源
+```shell
+cat <<EOL > /etc/apt/sources.list.d/debian.sources
+Types: deb
+URIs: https://mirrors.aliyun.com/debian/
+Suites: bookworm bookworm-updates
+Components: main non-free contrib
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb
+URIs: https://mirrors.aliyun.com/debian-security/
+Suites: bookworm-security
+Components: main
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+EOL
+```
+
+安装开发工具和库
+```shell
+apt update
+apt upgrade
+apt-get install -y python3-dev default-libmysqlclient-dev build-essential pkg-config
+```
+
+安装 python 包
+> pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+
+启动应用
+> python app.py
 
