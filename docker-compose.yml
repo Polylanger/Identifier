@@ -11,6 +11,12 @@ services:
       MYSQL_DATABASE: flask_db
       MYSQL_USER: flask_user
       MYSQL_PASSWORD: password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     ports:
       - "10088:3306"
     volumes:
@@ -31,7 +37,8 @@ services:
     ports:
       - "10089:5000"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     restart: always
 
 networks:
